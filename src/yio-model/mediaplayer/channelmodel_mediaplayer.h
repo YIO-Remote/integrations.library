@@ -86,6 +86,7 @@ class ListChannelModel : public QAbstractListModel {
  public slots:
     void setCount(int count);
 
+
  signals:
     void countChanged(int count);
 

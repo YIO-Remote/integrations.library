@@ -86,13 +86,13 @@ void IntegrationThreadAdapter::onStateChanged() {
     qCDebug(m_logCategory) << "ThreadAdapter state changed" << static_cast<States>(m_state);
     emit stateChanged();
     switch (m_state) {
-        case CONNECTING:
+        case States::CONNECTING:
             emit connecting();
             break;
-        case CONNECTED:
+    case States::CONNECTED:
             emit connected();
             break;
-        case DISCONNECTED:
+    case States::DISCONNECTED:
             emit disconnected();
             break;
     }

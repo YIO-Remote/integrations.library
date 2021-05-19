@@ -1,6 +1,7 @@
 /******************************************************************************
  *
  * Copyright (C) 2018-2019 Marton Borzak <hello@martonborzak.com>
+ * Copyright (C) 2021 Michael Lörcher <MichaelLoercher@web.de>
  *
  * This file is part of the YIO-Remote software project.
  *
@@ -23,6 +24,7 @@
 #pragma once
 
 #include <QVariant>
+#include "integrationconnectionstates.h"
 
 // FIXME provide complete API documentation with all QML requirements of the implementation!
 /**
@@ -30,7 +32,9 @@
  */
 class IntegrationInterface {
  public:
-    enum States { CONNECTED = 0, CONNECTING = 1, DISCONNECTED = 2 };
+    // enum States { CONNECTED = 0, CONNECTING = 1, DISCONNECTED = 2, STANDBY = 3 };
+    typedef IntegrationConnectionStates::States States;
+
 
     virtual ~IntegrationInterface();
 
