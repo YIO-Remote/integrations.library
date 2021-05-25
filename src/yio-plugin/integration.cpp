@@ -46,7 +46,7 @@ IntegrationInterface::~IntegrationInterface() {}
 Integration::Integration(const QVariantMap& config, EntitiesInterface* entities, NotificationsInterface* notifications,
                          YioAPIInterface* api, ConfigInterface* configObj, Plugin* plugin)
     : QObject(plugin->m_useWorkerThread ? nullptr : plugin),
-      m_state(DISCONNECTED),
+      m_state(States::DISCONNECTED),
       m_entities(entities),
       m_useWorkerThread(plugin->m_useWorkerThread),
       m_notifications(notifications),
@@ -66,7 +66,7 @@ Integration::Integration(const QVariantMap& config, EntitiesInterface* entities,
 // Used for integration threading adapter
 Integration::Integration(Plugin* plugin)
     : QObject(plugin),
-      m_state(DISCONNECTED),
+      m_state(States::DISCONNECTED),
       m_entities(nullptr),
       m_notifications(nullptr),
       m_yioapi(nullptr),
@@ -113,18 +113,18 @@ void Integration::setState(int state) {
 
     emit stateChanged();
     switch (state) {
-        case CONNECTING:
+        case States::CONNECTING:
             if (!m_useWorkerThread) {
                 emit connecting();
             }
             break;
-        case CONNECTED:
+        case States::CONNECTED:
             if (!m_useWorkerThread) {
                 emit connected();
             }
             m_entities->setConnected(m_integrationId, true);
             break;
-        case DISCONNECTED:
+        case States::DISCONNECTED:
             if (!m_useWorkerThread) {
                 emit disconnected();
             }

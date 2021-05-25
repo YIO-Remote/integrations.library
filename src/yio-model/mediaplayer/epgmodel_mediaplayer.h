@@ -119,7 +119,7 @@ class ListEPGModel : public QAbstractListModel {
     void reset();
 
  public slots:
-    void setCount(int count);
+    Q_INVOKABLE void setCount(int count);
 
  signals:
     void countChanged(int count);
@@ -131,29 +131,29 @@ class ListEPGModel : public QAbstractListModel {
 
 class BrowseEPGModel : public QObject {
     Q_OBJECT
-    Q_PROPERTY(QString id READ id NOTIFY idChanged)
-    Q_PROPERTY(int xCoordinate READ xCoordinate NOTIFY xCoordinateChanged)
-    Q_PROPERTY(int column READ column NOTIFY columnChanged)
-    Q_PROPERTY(int width READ width NOTIFY widthChanged)
-    Q_PROPERTY(int height READ height NOTIFY heightChanged)
-    Q_PROPERTY(QString type READ type NOTIFY typeChanged)
-    Q_PROPERTY(QString epgItemColor READ epgItemColor NOTIFY epgItemColorChanged)
-    Q_PROPERTY(QString epgItemTextColor READ epgItemTextColor NOTIFY epgItemTextColorChanged)
-    Q_PROPERTY(QString title READ title NOTIFY titleChanged)
-    Q_PROPERTY(QString subtitle READ subtitle NOTIFY subtitleChanged)
-    Q_PROPERTY(QString description READ description NOTIFY descriptionChanged)
-    Q_PROPERTY(QString startTime READ startTime NOTIFY startTimeChanged)
-    Q_PROPERTY(QString endTime READ endTime NOTIFY endTimeChanged)
-    Q_PROPERTY(QString imageUrl READ imageUrl NOTIFY imageUrlChanged)
+    Q_PROPERTY(QString id READ id WRITE setId NOTIFY idChanged)
+    Q_PROPERTY(int xCoordinate READ xCoordinate WRITE setXCoordinate NOTIFY xCoordinateChanged)
+    Q_PROPERTY(int column READ column WRITE setColumn NOTIFY columnChanged)
+    Q_PROPERTY(int width READ width WRITE setWidth NOTIFY widthChanged)
+    Q_PROPERTY(int height READ height WRITE setHeight NOTIFY heightChanged)
+    Q_PROPERTY(QString type READ type WRITE setType NOTIFY typeChanged)
+    Q_PROPERTY(QString epgItemColor READ epgItemColor WRITE setEpgItemColor NOTIFY epgItemColorChanged)
+    Q_PROPERTY(QString epgItemTextColor READ epgItemTextColor WRITE setEpgItemTextColor NOTIFY epgItemTextColorChanged)
+    Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
+    Q_PROPERTY(QString subtitle READ subtitle WRITE setSubtitle NOTIFY subtitleChanged)
+    Q_PROPERTY(QString description READ description WRITE setDescription NOTIFY descriptionChanged)
+    Q_PROPERTY(QString startTime READ startTime WRITE setStartTime NOTIFY startTimeChanged)
+    Q_PROPERTY(QString endTime READ endTime WRITE setEndTime NOTIFY endTimeChanged)
+    Q_PROPERTY(QString imageUrl READ imageUrl WRITE setImageUrl NOTIFY imageUrlChanged)
     Q_PROPERTY(QObject* model READ model NOTIFY modelChanged)
-    Q_PROPERTY(QStringList commands READ commands NOTIFY commandsChanged)
+    Q_PROPERTY(QStringList commands READ commands WRITE setCommands NOTIFY commandsChanged)
 
  public:
-    BrowseEPGModel(const QString& id, const int& xCoordinate, const int& column, const int& width, const int& height,
-                   const QString& type, const QString& epgItemColor, const QString& epgItemTextColor,
-                   const QString& title, const QString& subtitle, const QString& description, const QString& startTime,
-                   const QString& endTime, const QString& imageUrl, const QStringList& commands = {},
-                   QObject* parent = nullptr)
+    BrowseEPGModel(QObject* parent = nullptr, const QString& id = "", const int& xCoordinate = 0, const int& column = 0,
+                   const int& width = 0, const int& height = 0, const QString& type = "",
+                   const QString& epgItemColor = "", const QString& epgItemTextColor = "", const QString& title = "",
+                   const QString& subtitle = "", const QString& description = "", const QString& startTime = "",
+                   const QString& endTime = "", const QString& imageUrl = "", const QStringList& commands = {})
         : m_id(id),
           m_xCoordinate(xCoordinate),
           m_column(column),
@@ -168,7 +168,9 @@ class BrowseEPGModel : public QObject {
           m_startTime(startTime),
           m_endTime(endTime),
           m_imageUrl(imageUrl),
-          m_commands(commands) {}
+          m_commands(commands) {
+        Q_UNUSED(parent)
+    }
 
     ~BrowseEPGModel() {}
 
@@ -189,10 +191,33 @@ class BrowseEPGModel : public QObject {
     QObject*    model() { return m_model; }
     QStringList commands() { return m_commands; }
 
+    // Since we reuse BrowseModel we need setters
+    void setId(const QString& id) { m_id = id; }
+    void setXCoordinate(const int& xCoordinate) { m_xCoordinate = xCoordinate; }
+    void setColumn(const int& column) { m_column = column; }
+    void setWidth(const int& width) { m_width = width; }
+    void setHeight(const int& height) { m_height = height; }
+    void setType(const QString& type) { m_type = type; }
+    void setEpgItemColor(const QString& epgItemColor) { m_epgItemColor = epgItemColor; }
+    void setEpgItemTextColor(const QString& epgItemTextColor) { m_epgItemTextColor = epgItemTextColor; }
+    void setTitle(const QString& title) { m_title = title; }
+    void setSubtitle(const QString& subtitle) { m_subtitle = subtitle; }
+    void setDescription(const QString& description) { m_description = description; }
+    void setStartTime(const QString& startTime) { m_startTime = startTime; }
+    void setEndTime(const QString& endTime) { m_endTime = endTime; }
+    void setImageUrl(const QString& imageUrl) { m_imageUrl = imageUrl; }
+
+    void setCommands(const QStringList& commands) { m_commands = commands; }
+
     void addEPGItem(const QString& key, const int& xCoordinate, const int& column, const int& width, const int& height,
                     const QString& type, const QString& epgItemColor, const QString& epgItemTextColor,
                     const QString& title, const QString& subtitle, const QString& description, const QString& startTime,
                     const QString& endTime, const QString& imageUrl, const QVariant& commands);
+    // Since we reuse BrowseModel we need to clear former items
+    void clearItems();
+
+    // Since we reuse BrowseModel we need to clear former properties
+    void clearProperties();
     void reset();
     void update();
  signals:

@@ -70,7 +70,7 @@ class SearchModel : public QAbstractListModel {
     void countChanged(int count);
 
  private:
-    int                     m_count;
+    int              m_count;
     QList<SearchModelItem*> m_data;
 };
 
@@ -98,7 +98,6 @@ class SearchModelListItem {
 
 class SearchModelList : public QAbstractListModel {
     Q_OBJECT
-    Q_PROPERTY(int count READ count WRITE setCount NOTIFY countChanged)
 
  public:
     enum SearchRoles { KeyRole = Qt::UserRole + 1, TypeRole, TitleRole, SubTitleRole, ImageUrlRole, CommandsRole };
@@ -114,7 +113,7 @@ class SearchModelList : public QAbstractListModel {
     void append(const SearchModelListItem& o);
 
  public slots:
-    void setCount(int count);
+
 
  signals:
     void countChanged(int count);

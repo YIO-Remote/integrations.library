@@ -79,13 +79,13 @@ class ListModel : public QAbstractListModel {
 
 class BrowseModel : public QObject {
     Q_OBJECT
-    Q_PROPERTY(QString id READ id NOTIFY idChanged)
-    Q_PROPERTY(QString title READ title NOTIFY titleChanged)
-    Q_PROPERTY(QString subtitle READ subtitle NOTIFY subtitleChanged)
-    Q_PROPERTY(QString type READ type NOTIFY typeChanged)
-    Q_PROPERTY(QString imageUrl READ imageUrl NOTIFY imageUrlChanged)
+    Q_PROPERTY(QString id READ id WRITE setId NOTIFY idChanged)
+    Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
+    Q_PROPERTY(QString subtitle READ subtitle WRITE setSubtitle NOTIFY subtitleChanged)
+    Q_PROPERTY(QString type READ type WRITE setType NOTIFY typeChanged)
+    Q_PROPERTY(QString imageUrl READ imageUrl WRITE setImageUrl NOTIFY imageUrlChanged)
     Q_PROPERTY(QObject* model READ model NOTIFY modelChanged)
-    Q_PROPERTY(QStringList commands READ commands NOTIFY commandsChanged)
+    Q_PROPERTY(QStringList commands READ commands WRITE setCommands NOTIFY commandsChanged)
 
  public:
     BrowseModel(QObject* parent = nullptr, const QString& id = "", const QString& title = "",
@@ -104,8 +104,22 @@ class BrowseModel : public QObject {
     QObject*    model() { return m_model; }
     QStringList commands() { return m_commands; }
 
+    // Since we reuse BrowseModel we need setters
+    void setId(const QString &id) { m_id = id; }
+    void setTitle(const QString &title) { m_title = title; }
+    void setSubtitle(const QString &subtitle) { m_subtitle = subtitle; }
+    void setType(const QString &type) { m_type = type; }
+    void setImageUrl(const QString &imageUrl) { m_imageUrl = imageUrl; }
+    void setCommands(const QStringList &commands) { m_commands = commands; }
+
     void addItem(const QString& key, const QString& title, const QString& subtitle, const QString& type,
                  const QString& imageUrl, const QVariant& commands);
+
+    // Since we reuse BrowseModel we need to clear former items
+    void clearItems();
+
+    // Since we reuse BrowseModel we need to clear former properties
+    void clearProperties();
 
  signals:
     void idChanged();

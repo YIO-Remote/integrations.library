@@ -22,9 +22,11 @@
 
 #include "searchmodel_mediaplayer.h"
 
-SearchModel::SearchModel(QObject *parent) : QAbstractListModel(parent), m_count(0) {}
+SearchModel::SearchModel(QObject *parent) : QAbstractListModel(parent) {}
 
-int SearchModel::count() const { return m_count; }
+int SearchModel::count() const {
+    return m_count;
+}
 
 int SearchModel::rowCount(const QModelIndex &p) const {
     Q_UNUSED(p)
@@ -61,6 +63,13 @@ void SearchModel::append(SearchModelItem *o) {
     endInsertRows();
 }
 
+void SearchModel::setCount(int count) {
+    if (m_count == count) return;
+
+    m_count = count;
+    emit countChanged(m_count);
+}
+
 void SearchModel::insert(SearchModelItem *o, int i) {
     beginInsertRows(QModelIndex(), i, i);
     m_data.insert(i, o);
@@ -71,7 +80,9 @@ void SearchModel::insert(SearchModelItem *o, int i) {
     endInsertRows();
 }
 
-SearchModelItem *SearchModel::get(int i) { return m_data.value(i); }
+SearchModelItem *SearchModel::get(int i) {
+    return m_data.value(i);
+}
 
 void SearchModel::clear() {
     beginResetModel();
@@ -79,16 +90,11 @@ void SearchModel::clear() {
     endResetModel();
 }
 
-void SearchModel::setCount(int count) {
-    if (m_count == count) return;
-
-    m_count = count;
-    emit countChanged(m_count);
-}
-
 SearchModelList::SearchModelList(QObject *parent) : QAbstractListModel(parent), m_count(0) {}
 
-int SearchModelList::count() const { return m_count; }
+int SearchModelList::count() const {
+    return m_count;
+}
 
 int SearchModelList::rowCount(const QModelIndex &p) const {
     Q_UNUSED(p)
@@ -137,11 +143,4 @@ void SearchModelList::append(const SearchModelListItem &o) {
     emit countChanged(count());
 
     endInsertRows();
-}
-
-void SearchModelList::setCount(int count) {
-    if (m_count == count) return;
-
-    m_count = count;
-    emit countChanged(m_count);
 }

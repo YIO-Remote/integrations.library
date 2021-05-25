@@ -8,6 +8,7 @@ INCLUDEPATH += $$PWD/src
 
 HEADERS += \
     $$PWD/src/yio-interface/configinterface.h \
+    $$PWD/src/yio-interface/integrationconnectionstates.h \
     $$PWD/src/yio-interface/integrationinterface.h \
     $$PWD/src/yio-interface/notificationsinterface.h \
     $$PWD/src/yio-interface/plugininterface.h \

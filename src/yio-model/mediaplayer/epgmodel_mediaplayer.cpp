@@ -22,7 +22,7 @@
 
 #include "epgmodel_mediaplayer.h"
 
-ListEPGModel::ListEPGModel(QObject *parent) : QAbstractListModel(parent), m_count(0) {}
+ListEPGModel::ListEPGModel(QObject *parent) : QAbstractListModel(parent) {}
 
 int ListEPGModel::count() const {
     return m_count;
@@ -102,6 +102,13 @@ void ListEPGModel::append(const EPGModelItem &o) {
     endInsertRows();
 }
 
+void ListEPGModel::setCount(int count) {
+    if (m_count == count) return;
+
+    m_count = count;
+    emit countChanged(m_count);
+}
+
 void ListEPGModel::reset() {
     beginResetModel();
     m_data.clear();
@@ -109,14 +116,6 @@ void ListEPGModel::reset() {
     // Emit changed signals
     emit countChanged(count());
     endResetModel();
-}
-
-
-void ListEPGModel::setCount(int count) {
-    if (m_count == count) return;
-
-    m_count = count;
-    emit countChanged(m_count);
 }
 
 void BrowseEPGModel::addEPGItem(const QString &key, const int &xCoordinate, const int &column, const int &width,
@@ -130,7 +129,33 @@ void BrowseEPGModel::addEPGItem(const QString &key, const int &xCoordinate, cons
     model->append(item);
     emit modelChanged();
 }
+void BrowseEPGModel::clearItems() {
+    if (m_model) {
+        delete m_model;
+    }
 
+    m_model = new ListEPGModel();
+
+    emit modelChanged();
+}
+
+void BrowseEPGModel::clearProperties() {
+    m_id.clear();
+    m_xCoordinate = 0;
+    m_column = 0;
+    m_width = 0;
+    m_height = 0;
+    m_type.clear();
+    m_epgItemColor.clear();
+    m_epgItemTextColor.clear();
+    m_title.clear();
+    m_subtitle.clear();
+    m_description.clear();
+    m_startTime.clear();
+    m_endTime.clear();
+    m_imageUrl.clear();
+    m_commands.clear();
+}
 void BrowseEPGModel::reset() {
     ListEPGModel *model = static_cast<ListEPGModel *>(m_model);
     model->reset();
@@ -138,6 +163,5 @@ void BrowseEPGModel::reset() {
 }
 
 void BrowseEPGModel::update() {
-    ListEPGModel *model = static_cast<ListEPGModel *>(m_model);
-    emit modelChanged();
+    emit          modelChanged();
 }

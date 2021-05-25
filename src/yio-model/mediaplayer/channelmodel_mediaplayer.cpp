@@ -22,7 +22,7 @@
 
 #include "channelmodel_mediaplayer.h"
 
-ListChannelModel::ListChannelModel(QObject *parent) : QAbstractListModel(parent), m_count(0) {}
+ListChannelModel::ListChannelModel(QObject *parent) : QAbstractListModel(parent) {}
 
 int ListChannelModel::count() const {
     return m_count;
@@ -77,6 +77,13 @@ void ListChannelModel::append(const ChannelModelItem &o) {
     endInsertRows();
 }
 
+void ListChannelModel::setCount(int count) {
+    if (m_count == count) return;
+
+    m_count = count;
+    emit countChanged(m_count);
+}
+
 void ListChannelModel::reset() {
     beginResetModel();
     m_data.clear();
@@ -86,20 +93,34 @@ void ListChannelModel::reset() {
     endResetModel();
 }
 
-void ListChannelModel::setCount(int count) {
-    if (m_count == count) return;
-
-    m_count = count;
-    emit countChanged(m_count);
-}
-
 void BrowseChannelModel::addchannelItem(const QString &key, const QString &time, const QString &title,
                                         const QString &subtitle, const QString &type, const QString &imageUrl,
                                         const QVariant &commands) {
     ListChannelModel *model = static_cast<ListChannelModel *>(m_model);
     ChannelModelItem  item = ChannelModelItem(key, time, title, subtitle, type, imageUrl, commands);
     model->append(item);
+
     emit modelChanged();
+}
+
+void BrowseChannelModel::clearItems() {
+    if (m_model) {
+        delete m_model;
+    }
+
+    m_model = new ListChannelModel();
+
+    emit modelChanged();
+}
+
+void BrowseChannelModel::clearProperties() {
+    m_id.clear();
+    m_time.clear();
+    m_title.clear();
+    m_subtitle.clear();
+    m_type.clear();
+    m_imageUrl.clear();
+    m_commands.clear();
 }
 
 void BrowseChannelModel::reset() {
@@ -109,6 +130,5 @@ void BrowseChannelModel::reset() {
 }
 
 void BrowseChannelModel::update() {
-    ListChannelModel *model = static_cast<ListChannelModel *>(m_model);
     emit modelChanged();
 }

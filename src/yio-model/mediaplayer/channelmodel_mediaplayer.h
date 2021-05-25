@@ -24,8 +24,10 @@
 
 #include <QAbstractListModel>
 #include <QObject>
+#include <QQmlListProperty>
 #include <QVariant>
 #include <QtDebug>
+#include <QtQml>
 
 class ChannelModelItem {
  public:
@@ -80,11 +82,10 @@ class ListChannelModel : public QAbstractListModel {
     QVariant               data(const QModelIndex& index, int role = Qt::DisplayRole) const;
     QHash<int, QByteArray> roleNames() const;
 
-    void append(const ChannelModelItem& o);
-    void reset();
-
  public slots:
-    void setCount(int count);
+    Q_INVOKABLE void append(const ChannelModelItem& o);
+    Q_INVOKABLE void reset();
+    Q_INVOKABLE void setCount(int count);
 
  signals:
     void countChanged(int count);
@@ -96,26 +97,28 @@ class ListChannelModel : public QAbstractListModel {
 
 class BrowseChannelModel : public QObject {
     Q_OBJECT
-    Q_PROPERTY(QString id READ id NOTIFY idChanged)
-    Q_PROPERTY(QString time READ time NOTIFY timeChanged)
-    Q_PROPERTY(QString title READ title NOTIFY titleChanged)
-    Q_PROPERTY(QString subtitle READ subtitle NOTIFY subtitleChanged)
-    Q_PROPERTY(QString type READ type NOTIFY typeChanged)
-    Q_PROPERTY(QString imageUrl READ imageUrl NOTIFY imageUrlChanged)
+    Q_PROPERTY(QString id READ id WRITE setId NOTIFY idChanged)
+    Q_PROPERTY(QString time READ time WRITE setId NOTIFY timeChanged)
+    Q_PROPERTY(QString title READ title WRITE setTitle NOTIFY titleChanged)
+    Q_PROPERTY(QString subtitle READ subtitle WRITE setSubtitle NOTIFY subtitleChanged)
+    Q_PROPERTY(QString type READ type WRITE setType NOTIFY typeChanged)
+    Q_PROPERTY(QString imageUrl READ imageUrl WRITE setImageUrl NOTIFY imageUrlChanged)
     Q_PROPERTY(QObject* model READ model NOTIFY modelChanged)
-    Q_PROPERTY(QStringList commands READ commands NOTIFY commandsChanged)
+    Q_PROPERTY(QStringList commands READ commands WRITE setCommands NOTIFY commandsChanged)
 
  public:
-    BrowseChannelModel(const QString& id, const QString& time, const QString& title, const QString& subtitle,
-                       const QString& type, const QString& imageUrl, const QStringList& commands = {},
-                       QObject* parent = nullptr)
+    BrowseChannelModel(QObject* parent = nullptr, const QString& id = "", const QString& time = "",
+                       const QString& title = "", const QString& subtitle = "", const QString& type = "",
+                       const QString& imageUrl = "", const QStringList& commands = {})
         : m_id(id),
           m_time(time),
           m_title(title),
           m_subtitle(subtitle),
           m_type(type),
           m_imageUrl(imageUrl),
-          m_commands(commands) {}
+          m_commands(commands) {
+        Q_UNUSED(parent)
+    }
 
     ~BrowseChannelModel() {}
 
@@ -128,8 +131,24 @@ class BrowseChannelModel : public QObject {
     QObject*    model() { return m_model; }
     QStringList commands() { return m_commands; }
 
+    // Since we reuse BrowseModel we need setters
+    void setId(const QString& id) { m_id = id; }
+    void setTime(const QString& time) { m_time = time; }
+    void setTitle(const QString& title) { m_title = title; }
+    void setSubtitle(const QString& subtitle) { m_subtitle = subtitle; }
+    void setType(const QString& type) { m_type = type; }
+    void setImageUrl(const QString& imageUrl) { m_imageUrl = imageUrl; }
+    void setCommands(const QStringList& commands) { m_commands = commands; }
+
     void addchannelItem(const QString& key, const QString& time, const QString& title, const QString& subtitle,
                         const QString& type, const QString& imageUrl, const QVariant& commands);
+
+    // Since we reuse BrowseModel we need to clear former items
+    void clearItems();
+
+    // Since we reuse BrowseModel we need to clear former properties
+    void clearProperties();
+
     void reset();
     void update();
  signals:

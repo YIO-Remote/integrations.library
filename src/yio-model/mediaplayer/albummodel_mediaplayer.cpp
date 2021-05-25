@@ -89,3 +89,22 @@ void BrowseModel::addItem(const QString &key, const QString &title, const QStrin
     model->append(item);
     emit modelChanged();
 }
+
+void BrowseModel::clearItems() {
+    if (m_model) {
+        delete m_model;
+    }
+
+    m_model = new ListModel();
+
+    emit modelChanged();
+}
+
+void BrowseModel::clearProperties() {
+    m_id.clear();
+    m_title.clear();
+    m_subtitle.clear();
+    m_type.clear();
+    m_imageUrl.clear();
+    m_commands.clear();
+}
